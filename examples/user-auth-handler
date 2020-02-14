@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'bundler/setup'
+require 'k8s/kubeconfig'
+
+# A custom auth provider handler for "name: custom"
+#
+# The call method should return headers that are added to the http request
+# rubocop:disable Style/ClassAndModuleChildren
+class K8s::KubeConfig::AuthProvider::Custom < K8s::KubeConfig::AuthProvider::Base
+  attribute :key
+
+  def call
+    { 'Authentication' => "Bearer #{key.reverse} #{user.name}" }
+  end
+end
+# rubocop:enable Style/ClassAndModuleChildren
+
+config = K8s::KubeConfig.load_string(<<~E_CFG)
+  users:
+    - name: foo
+      user:
+        auth-provider:
+          name: custom
+          config:
+            key: olleh
+    - name: bar
+      user:
+        exec:
+          command: /bin/bash
+          args:
+            - -c
+            - echo hey
+    - name: baz
+      user:
+        token: abcd
+E_CFG
+
+puts config.user('foo').headers.inspect
+puts config.user('bar').headers.inspect
+puts config.user('baz').headers.inspect

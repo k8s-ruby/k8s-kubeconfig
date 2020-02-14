@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'bundler/setup'
+require 'k8s/kubeconfig'
+
+# Loads files from paths in arguments or tries to read configuration from default locations if none given.
+# If multiple paths are given, the files are merged.
+# Current context name and the cluster and user name it refers to will be displayed.
+
+config = ARGV.empty? ? K8s::KubeConfig.load_default : K8s::KubeConfig.load_file(*ARGV)
+
+puts <<~MSG
+  Context: #{config.current_context}
+  Cluster: #{config.context.cluster}
+     User: #{config.context.user}
+MSG

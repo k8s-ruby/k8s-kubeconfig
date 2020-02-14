@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'bundler/setup'
+require 'k8s/kubeconfig'
+
+# Loads files from paths in arguments or tries to read configuration from default locations if none given.
+# If multiple paths are given, the files are merged.
+# The name of the cluster refered by the current context is renamed to "renamed-cluster" and the new
+# config YAML will be displayed
+
+config = ARGV.empty? ? K8s::KubeConfig.load_default : K8s::KubeConfig.load_file(*ARGV)
+
+config.rename_cluster(config.context.cluster, 'renamed-cluster')
+
+puts config.to_yaml

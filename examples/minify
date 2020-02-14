@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'bundler/setup'
+require 'k8s/kubeconfig'
+
+# Loads files from paths in arguments, merges them and outputs the merged and minified configuration as yaml.
+# The minify method removes everything but the items relevant to current context from the configuration, like
+# kubectl config --minify
+
+puts K8s::KubeConfig.load_file(*ARGV).to_yaml(minify: true)

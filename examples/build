@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'bundler/setup'
+require 'k8s/kubeconfig'
+require 'optparse'
+
+# A new configuration will be generated
+
+options = {}
+output_options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{$PROGRAM_NAME} [options]"
+
+  opts.on('--token=TOKEN', 'set user authentication token') do |token|
+    options[:token] = token
+  end
+
+  opts.on('--server=ADDRESS', 'set cluster api address') do |address|
+    options[:server] = address
+  end
+
+  opts.on('--ca=path', 'set certificate authority file path') do |path|
+    options[:certificate_authority] = path
+  end
+
+  opts.on('--client-cert=path', 'set client certificate file path') do |path|
+    options[:client_cert] = path
+  end
+
+  opts.on('--client-key=path', 'set client key file path') do |path|
+    options[:client_key] = path
+  end
+
+  opts.on('--flatten', 'read referenced files into data fields') do
+    output_options[:flatten] = true
+  end
+
+  opts.on('--help', 'Prints this help') do
+    puts opts
+    exit
+  end
+end.parse!
+
+puts K8s::KubeConfig.build(**options).to_yaml(**output_options)

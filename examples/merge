@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'bundler/setup'
+require 'k8s/kubeconfig'
+
+# Loads files from paths in arguments, merges them and outputs the merged configuration as yaml
+
+puts K8s::KubeConfig.load_file(*ARGV).to_yaml
